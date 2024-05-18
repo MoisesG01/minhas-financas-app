@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import UsuarioService from '../app/service/usuarioService';
+
+import LocalStorageService from '../app/service/localstorageService';
 
 const Home = () => {
     const [saldo, setSaldo] = useState(0);
 
     useEffect(() => {
-        const usuarioLogadoString = localStorage.getItem('_usuario_logado')
-        const usuarioLogado = JSON.parse(usuarioLogadoString)
+        const usuarioService = new UsuarioService();
+        const usuarioLogado = LocalStorageService.obterItem('_usuario_logado');
 
-        axios
-            .post(`http://localhost:8080/api/usuarios/${usuarioLogado.id}/saldo`)
-            .then(response => {
-                setSaldo(response.data);
-            })
-            .catch(error => {
-                console.error(error.response);
-            });
+        if (usuarioLogado && usuarioLogado.id) {
+            usuarioService
+                .obterSaldoPorUsuario(usuarioLogado.id)
+                .then(response => {
+                    setSaldo(response.data);
+                })
+                .catch(error => {
+                    console.error(error.response);
+                });
+        }
     }, []);
 
     return (
@@ -28,12 +32,12 @@ const Home = () => {
             <p className="lead">
                 <a className="btn btn-primary btn-lg"
                     href="/cadastro-usuarios"
-                    role="button"><i class="fa fa-users"></i>
+                    role="button"><i className="fa fa-users"></i>
                     Cadastrar Usuário
                 </a>
                 <a className="btn btn-danger btn-lg"
                     href="https://bootswatch.com/flatly/#"
-                    role="button"><i class="fa fa-users"></i>
+                    role="button"><i className="fa fa-users"></i>
                     Cadastrar Lançamento
                 </a>
             </p>

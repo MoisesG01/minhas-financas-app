@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 import Card from "../components/card";
 import FormGroup from "../components/form-group";
+import UsuarioService from "../app/service/usuarioService";
+import { mensagemSucesso, mensagemErro } from "../components/toastr";
 
 const CadastroUsuario = () => {
     const [nome, setNome] = useState('');
@@ -12,8 +14,52 @@ const CadastroUsuario = () => {
 
     const navigate = useNavigate();
 
+    const service = new UsuarioService();
+
+    const validar = () => {
+        const msgs = []
+
+        if (!nome) {
+            msgs.push('O Campo Nome é OBRIGATÓRIO!');
+        }
+
+        if (!email) {
+            msgs.push('O Campo E-mail é OBRIGATÓRIO!');
+        } else if (!email.match(/^[a-z0-9.]+@[a-z0-9]+\.[a-z]+$/i)) {
+            msgs.push('Infome um E-mail Válido!');
+        }
+
+        if (!senha || !senhaRepeticao) {
+            msgs.push('O Campo Senha é OBRIGATÓRIO!');
+        } else if (senha !== senhaRepeticao) {
+            msgs.push('As Senhas Devem Ser Iguais!');
+        }
+
+        return msgs;
+    }
+
     const cadastrar = () => {
-        console.log({ nome, email, senha, senhaRepeticao });
+        const msgs = validar();
+
+        if (msgs && msgs.length > 0) {
+            msgs.forEach( (msg, index) => {
+                mensagemErro(msg);
+            });
+            return false;
+        }
+
+        const usuario = {
+            nome: nome,
+            email: email,
+            senha: senha
+        }
+        service.salvar(usuario)
+            .then(response => {
+                mensagemSucesso('Usuário Cadastrado com Sucesso! Faça o Login Para Acessar o Sistema.');
+                navigate('/login');
+            }).catch(erro => {
+                mensagemErro(erro.response?.data);
+            })
     }
 
     const cancelar = () => {
