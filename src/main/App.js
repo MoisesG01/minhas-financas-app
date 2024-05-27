@@ -9,8 +9,8 @@ import Rotas from './rotas';
 import Navbar from '../components/navbar';
 
 import 'primeicons/primeicons.css';
-
-import { Button } from 'primereact/button';
+import 'primereact/resources/themes/nova-alt//theme.css'
+import 'primereact/resources/primereact.min.css'
 
 class App extends React.Component {
 
@@ -19,7 +19,7 @@ class App extends React.Component {
 
       <>
       <Navbar />
-      <Button label="Submit" icon="pi pi-check" iconPos="right" />
+      
       <div className='container'>
         <Rotas />
       </div>

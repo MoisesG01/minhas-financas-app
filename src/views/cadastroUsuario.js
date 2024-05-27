@@ -13,58 +13,32 @@ const CadastroUsuario = () => {
     const [senhaRepeticao, setSenhaRepeticao] = useState('');
 
     const navigate = useNavigate();
-
     const service = new UsuarioService();
 
-    const validar = () => {
-        const msgs = []
-
-        if (!nome) {
-            msgs.push('O Campo Nome é OBRIGATÓRIO!');
-        }
-
-        if (!email) {
-            msgs.push('O Campo E-mail é OBRIGATÓRIO!');
-        } else if (!email.match(/^[a-z0-9.]+@[a-z0-9]+\.[a-z]+$/i)) {
-            msgs.push('Infome um E-mail Válido!');
-        }
-
-        if (!senha || !senhaRepeticao) {
-            msgs.push('O Campo Senha é OBRIGATÓRIO!');
-        } else if (senha !== senhaRepeticao) {
-            msgs.push('As Senhas Devem Ser Iguais!');
-        }
-
-        return msgs;
-    }
-
     const cadastrar = () => {
-        const msgs = validar();
+        const usuario = { nome, email, senha, senhaRepeticao };
 
-        if (msgs && msgs.length > 0) {
-            msgs.forEach( (msg, index) => {
-                mensagemErro(msg);
-            });
+        try {
+            service.validar(usuario);
+        } catch (erro) {
+            const msgs = erro.mensagens;
+            msgs.forEach(msg => mensagemErro(msg));
             return false;
         }
 
-        const usuario = {
-            nome: nome,
-            email: email,
-            senha: senha
-        }
         service.salvar(usuario)
             .then(response => {
                 mensagemSucesso('Usuário Cadastrado com Sucesso! Faça o Login Para Acessar o Sistema.');
                 navigate('/login');
-            }).catch(erro => {
-                mensagemErro(erro.response?.data);
             })
-    }
+            .catch(erro => {
+                mensagemErro(erro.response?.data);
+            });
+    };
 
     const cancelar = () => {
         navigate('/login');
-    }
+    };
 
     return (
         <Card title="Cadastro de Usuário">
@@ -76,6 +50,7 @@ const CadastroUsuario = () => {
                                 id="inputNome"
                                 className="form-control"
                                 name="nome"
+                                value={nome}
                                 onChange={e => setNome(e.target.value)} />
                         </FormGroup>
                         <FormGroup label="E-mail: *" htmlFor="inputEmail">
@@ -83,6 +58,7 @@ const CadastroUsuario = () => {
                                 id="inputEmail"
                                 className="form-control"
                                 name="email"
+                                value={email}
                                 onChange={e => setEmail(e.target.value)} />
                         </FormGroup>
                         <FormGroup label="Senha: *" htmlFor="inputSenha">
@@ -90,17 +66,27 @@ const CadastroUsuario = () => {
                                 id="inputSenha"
                                 className="form-control"
                                 name="senha"
+                                value={senha}
                                 onChange={e => setSenha(e.target.value)} />
                         </FormGroup>
-                        <FormGroup label="Repitir Senha: *" htmlFor="inputRepitaSenha">
+                        <FormGroup label="Repetir Senha: *" htmlFor="inputRepitaSenha">
                             <input type="password"
                                 id="inputRepitaSenha"
                                 className="form-control"
                                 name="senhaRepeticao"
+                                value={senhaRepeticao}
                                 onChange={e => setSenhaRepeticao(e.target.value)} />
                         </FormGroup>
-                        <button type="button" onClick={cadastrar} className='btn btn-success'>Salvar</button>
-                        <button type="button" onClick={cancelar} className='btn btn-danger'>Cancelar</button>
+                        <button type="button" 
+                                onClick={cadastrar} 
+                                className='btn btn-success'>
+                                <i className="pi pi-save"></i> Salvar
+                        </button>
+                        <button type="button" 
+                                onClick={cancelar} 
+                                className='btn btn-danger'>
+                                <i className="pi pi-times"></i> Cancelar
+                        </button>
                     </div>
                 </div>
             </div>
