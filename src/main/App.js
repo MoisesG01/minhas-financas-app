@@ -11,19 +11,20 @@ import Navbar from '../components/navbar';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-alt//theme.css'
 import 'primereact/resources/primereact.min.css'
+import ProvedorAutenticacao from './provedorAutenticacao';
 
 class App extends React.Component {
 
   render() {
     return (
 
-      <>
+      <ProvedorAutenticacao>
       <Navbar />
       
       <div className='container'>
         <Rotas />
       </div>
-      </>
+      </ProvedorAutenticacao>
     )
   }
 }
